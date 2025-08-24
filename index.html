@@ -112,6 +112,8 @@
           <li>🔥 New Games Added Daily</li>
         </ul>
       </div>
+
+      <!-- نسخة Game الأصلية -->
       <div class="page" id="game">
         <h3>🎮 Install Game</h3>
         <input type="text" id="game-id" class="input" placeholder="Enter Game ID">
@@ -120,30 +122,52 @@
           <div id="game-name"></div>
         </div>
         <button class="btn" id="install-game-btn">Install</button>
-
-        <!-- Progress + Messages -->
         <div id="progress-container">
           <progress id="progress-bar" value="0" max="100"></progress>
           <div id="progress-text">0%</div>
           <div id="error-message" class="error-text"></div>
           <div id="game-result" class="success-text"></div>
         </div>
-
         <div style="margin-top:10px;display:flex;gap:8px;">
           <button class="btn-outline" id="steamdb-btn">SteamDB</button>
           <button class="btn-outline" id="restart-steam-btn">Restart Steam</button>
         </div>
       </div>
+
+      <!-- نسخة Online -->
       <div class="page" id="online">
-        <div class="big-buttons">
-          <button id="online-btn">🌍 Online Games</button>
+        <h3>🌍 Online</h3> <!-- الاسم أعلى الصفحة -->
+        <input type="text" id="online-game-id" class="input" placeholder="Enter Game ID">
+        <div class="game-preview" id="online-game-preview">
+          <img id="online-game-img" src="" alt="Game">
+          <div id="online-game-name"></div>
+        </div>
+        <button class="btn" id="install-online-game-btn">Install</button>
+        <div id="online-progress-container" style="display:none;">
+          <progress id="online-progress-bar" value="0" max="100"></progress>
+          <div id="online-progress-text">0%</div>
+          <div id="online-error-message" class="error-text"></div>
+          <div id="online-game-result" class="success-text"></div>
         </div>
       </div>
+
+      <!-- نسخة Bypaas -->
       <div class="page" id="bypass">
-        <div class="big-buttons">
-          <button id="bypass-btn">🛡️ Open Bypass</button>
+        <h3>🛡️ Bypaas</h3> <!-- الاسم أعلى الصفحة -->
+        <input type="text" id="bypaas-game-id" class="input" placeholder="Enter Game ID">
+        <div class="game-preview" id="bypaas-game-preview">
+          <img id="bypaas-game-img" src="" alt="Game">
+          <div id="bypaas-game-name"></div>
+        </div>
+        <button class="btn" id="install-bypaas-game-btn">Install</button>
+        <div id="bypaas-progress-container" style="display:none;">
+          <progress id="bypaas-progress-bar" value="0" max="100"></progress>
+          <div id="bypaas-progress-text">0%</div>
+          <div id="bypaas-error-message" class="error-text"></div>
+          <div id="bypaas-game-result" class="success-text"></div>
         </div>
       </div>
+
       <div class="page" id="contact">
         <div class="big-buttons">
           <button onclick="window.open('https://discord.gg/feVHYz4V47','_blank')">💬 Discord</button>
@@ -164,78 +188,90 @@
     document.querySelectorAll(".item").forEach(el=>{
       el.addEventListener("click", ()=>setPage(el.dataset.page))
     })
-    document.getElementById('game-id').addEventListener('input', function(){
-      const gameId = this.value.trim()
-      const preview = document.getElementById('game-preview')
-      if(/^\d+$/.test(gameId)){
-        document.getElementById('game-img').src=`https://cdn.akamai.steamstatic.com/steam/apps/${gameId}/header.jpg`
-        document.getElementById('game-name').textContent="Game ID: "+gameId
-        preview.style.display='block'
-      }else{preview.style.display='none'}
-    })
 
-    document.getElementById("install-game-btn").onclick=async()=>{
-      const gameId=document.getElementById("game-id").value.trim()
-      if(!gameId)return
+        function setupGameInput(idPrefix){
+      const gameIdInput = document.getElementById(`${idPrefix}-game-id`)
+      const preview = document.getElementById(`${idPrefix}-game-preview`)
+      const gameImg = document.getElementById(`${idPrefix}-game-img`)
+      const gameName = document.getElementById(`${idPrefix}-game-name`)
+      const installBtn = document.getElementById(`install-${idPrefix}-game-btn`)
+      const progressContainer = document.getElementById(`${idPrefix}-progress-container`)
+      const progressBar = document.getElementById(`${idPrefix}-progress-bar`)
+      const progressText = document.getElementById(`${idPrefix}-progress-text`)
+      const errorMessage = document.getElementById(`${idPrefix}-error-message`)
+      const gameResult = document.getElementById(`${idPrefix}-game-result`)
 
-      const progressContainer=document.getElementById("progress-container")
-      const progressBar=document.getElementById("progress-bar")
-      const progressText=document.getElementById("progress-text")
-      const errorMessage=document.getElementById("error-message")
-      const gameResult=document.getElementById("game-result")
-
-      progressContainer.style.display="block"
-      progressBar.value=0
-      progressText.textContent="0%"
-      errorMessage.textContent=""
-      gameResult.textContent=""
-
-      const result=await window.electronAPI.installGame(gameId)
-      if(result.success){
-        // ✅ اسم اللعبة
-        try{
-          const res=await fetch(`https://store.steampowered.com/api/appdetails?appids=${gameId}`)
-          const data=await res.json()
-          if(data && data[gameId] && data[gameId].success){
-            const gameName=data[gameId].data.name
-            gameResult.textContent=gameName
-          }else{
-            gameResult.textContent="Game Installed"
-          }
-        }catch(e){
-          gameResult.textContent="Game Installed"
+      gameIdInput.addEventListener('input', function(){
+        const gameId = this.value.trim()
+        if(/^\d+$/.test(gameId)){
+          gameImg.src = `https://cdn.akamai.steamstatic.com/steam/apps/${gameId}/header.jpg`
+          gameName.textContent = "Game ID: " + gameId
+          preview.style.display = 'block'
+        }else{
+          preview.style.display = 'none'
         }
-      }else{
-        // ❌ لو مش موجود
-        progressBar.value=100
-        progressBar.style.accentColor="red"
-        progressText.textContent="100%"
-        errorMessage.textContent="غير متاح للاضافة، دوس OK"
-        alert("غير متاح للاضافة دوس OK")
-        window.open("https://discord.com/invite/zTRRN4Na2G","_blank")
-        setTimeout(()=>{progressContainer.style.display="none"},1000)
+      })
+
+      installBtn.onclick = async ()=>{
+        const gameId = gameIdInput.value.trim()
+        if(!gameId) return
+        progressContainer.style.display = "block"
+        progressBar.value = 0
+        progressText.textContent = "0%"
+        errorMessage.textContent = ""
+        gameResult.textContent = ""
+
+        const result = await window.electronAPI.installGame(gameId)
+        if(result.success){
+          try{
+            const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${gameId}`)
+            const data = await res.json()
+            if(data && data[gameId] && data[gameId].success){
+              gameResult.textContent = data[gameId].data.name
+            }else{
+              gameResult.textContent = "Game Installed"
+            }
+          }catch(e){
+            gameResult.textContent = "Game Installed"
+          }
+        }else{
+          progressBar.value = 100
+          progressBar.style.accentColor = "red"
+          progressText.textContent = "100%"
+          errorMessage.textContent = "غير متاح للاضافة، دوس OK"
+          alert("غير متاح للاضافة دوس OK")
+          window.open("https://discord.com/invite/zTRRN4Na2G","_blank")
+          setTimeout(()=>{progressContainer.style.display="none"},1000)
+        }
       }
+
+      window.electronAPI.onInstallProgress((_event, { current, total })=>{
+        if(total>0){
+          let percent = Math.floor((current/total)*100)
+          progressBar.value = percent
+          progressBar.style.accentColor="#1e90ff"
+          progressText.textContent = percent + "%"
+          if(percent>=100){
+            setTimeout(()=>{progressContainer.style.display="none"},1000)
+          }
+        }
+      })
     }
 
-    window.electronAPI.onInstallProgress((_event, { current, total })=>{
-      if(total>0){
-        let percent=Math.floor((current/total)*100)
-        document.getElementById("progress-bar").value=percent
-        document.getElementById("progress-bar").style.accentColor="#1e90ff"
-        document.getElementById("progress-text").textContent=percent+"%"
-        if(percent>=100){
-          setTimeout(()=>{document.getElementById("progress-container").style.display="none"},1000)
-        }
-      }
-    })
+    // إعداد جميع الصفحات
+    setupGameInput('game')
+    setupGameInput('bypaas')
+    setupGameInput('online')
 
-    document.getElementById("steamdb-btn").onclick=()=>{window.electronAPI.openSteamDB()}
-    document.getElementById("restart-steam-btn").onclick=async()=>{
-      const res=await window.electronAPI.restartSteam()
+    // الروابط الإضافية
+    document.getElementById("steamdb-btn").onclick = ()=>{window.electronAPI.openSteamDB()}
+    document.getElementById("restart-steam-btn").onclick = async ()=>{
+      const res = await window.electronAPI.restartSteam()
       if(!res.success) alert(res.error)
     }
-    document.getElementById("online-btn").onclick=()=>window.open("https://zekaa-injector.vercel.app/games.html","_blank")
-    document.getElementById("bypass-btn").onclick=()=>window.open("https://zekaa-injector.vercel.app/Bypass.html","_blank")
+    document.getElementById("online-btn").onclick = ()=>window.open("https://zekaa-injector.vercel.app/games.html","_blank")
+    document.getElementById("bypass-btn").onclick = ()=>window.open("https://zekaa-injector.vercel.app/Bypass.html","_blank")
   </script>
 </body>
 </html>
+     
