@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ZEKAA VIP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --purple: #6a0dad;
+      --blue: #1e90ff;
+      --bg1: #0a0018;
+      --bg2: #0a0030;
+      --text: #f1f1f1;
+      --red: #ff4444;
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0; padding:0; font-family:"Segoe UI",sans-serif; color:var(--text);
+      height:100vh; display:flex; justify-content:center; align-items:center;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    }
+    .dashboard{
+      width:400px; height:430px; display:flex;
+      border-radius:12px; overflow:hidden;
+      background:rgba(20,20,40,0.9);
+      box-shadow:0 0 25px var(--purple),0 0 40px var(--blue);
+    }
+    .sidebar{
+      width:110px; background:rgba(15,15,35,0.95);
+      display:flex; flex-direction:column; padding:10px; border-right:1px solid #222;
+    }
+    .brand{
+      text-align:center; font-weight:bold; font-size:15px; color:var(--blue);
+      text-shadow:0 0 10px var(--purple),0 0 18px var(--blue); margin-bottom:12px;
+    }
+    .brand img{width:50px; height:50px; animation:spin 12s linear infinite;}
+    @keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
+    .menu{display:flex; flex-direction:column; gap:5px;}
+    .item{
+      padding:6px; border-radius:6px; cursor:pointer;
+      font-size:13px; display:flex; align-items:center; gap:5px;
+      transition:.25s;
+    }
+    .item:hover{background:rgba(106,13,173,.2);color:var(--blue);transform:translateX(4px);}
+    .item.active{background:rgba(30,144,255,.2);box-shadow:inset 0 0 10px var(--purple);}
+    .content{flex:1;padding:12px;}
+    .page{display:none;}
+    .page.active{display:block;animation:fadeIn .4s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+    .home-title{
+      font-size:18px;font-weight:bold;text-align:center;
+      color:var(--blue);margin:10px 0;text-shadow:0 0 10px var(--blue),0 0 18px var(--purple);
+      animation:glow 2s infinite alternate;
+    }
+    @keyframes glow{from{text-shadow:0 0 5px var(--purple);}to{text-shadow:0 0 20px var(--blue);}}
+    .feature-list{list-style:none;padding:0;font-size:12px;}
+    .feature-list li{margin:6px 0;}
+    .feature-list li::before{content:"✨ ";color:var(--purple);}
+    .input{
+      width:100%;padding:6px;margin:6px 0;
+      border:1px solid #2c2c38;border-radius:5px;background:#101018;color:#fff;font-size:12px;
+    }
+    .btn{
+      padding:7px 9px;border:none;border-radius:6px;font-size:12px;
+      font-weight:bold;cursor:pointer;background:var(--purple);color:#fff;
+      box-shadow:0 0 10px var(--purple);transition:.25s;
+    }
+    .btn:hover{background:var(--blue);box-shadow:0 0 12px var(--blue);}
+    .btn-outline{
+      padding:7px 9px;border:1px solid var(--blue);border-radius:6px;
+      background:transparent;color:var(--blue);font-size:12px;font-weight:bold;cursor:pointer;
+      transition:.25s;
+    }
+    .btn-outline:hover{background:rgba(30,144,255,.1);box-shadow:0 0 8px var(--blue);}
+    .game-preview{text-align:center;margin-top:8px;display:none;}
+    .game-preview img{width:200px;border-radius:6px;margin-bottom:5px;box-shadow:0 0 12px var(--blue);}
+    .big-buttons{margin-top:15px;display:flex;flex-direction:column;gap:10px;}
+    .big-buttons button{
+      padding:12px;font-size:14px;font-weight:bold;border-radius:6px;
+      border:none;background:var(--blue);color:#fff;cursor:pointer;
+      box-shadow:0 0 12px var(--blue);transition:.3s;
+    }
+    .big-buttons button:hover{background:var(--purple);box-shadow:0 0 15px var(--purple);}
+    #progress-container{margin-top:10px;display:none;}
+    #progress-bar{width:100%;height:18px;}
+    #progress-text{text-align:center;font-size:12px;margin-top:4px;}
+    .error-text{color:var(--red);font-weight:bold;text-align:center;margin-top:8px;}
+    .success-text{color:var(--blue);font-weight:bold;text-align:center;margin-top:8px;font-size:14px;}
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <div class="sidebar">
+      <div class="brand">
+        <img src="https://cdn-icons-png.flaticon.com/512/814/814513.png"><br>⚡ZEKAA⚡
+      </div>
+      <div class="menu">
+        <div class="item active" data-page="home"><i class="fas fa-home"></i> Home</div>
+        <div class="item" data-page="game"><i class="fas fa-gamepad"></i> Game</div>
+        <div class="item" data-page="online"><i class="fas fa-globe"></i> Online</div>
+        <div class="item" data-page="bypass"><i class="fas fa-shield-alt"></i> Bypass</div>
+        <div class="item" data-page="contact"><i class="fas fa-comments"></i> Contact</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="page active" id="home">
+        <div class="home-title">🚀 ZEKAA VIP 🚀</div>
+        <ul class="feature-list">
+          <li>🎯 Add any game instantly</li>
+          <li>🔒 Cyber-level Security</li>
+          <li>📦 50,000+ Games Supported</li>
+          <li>🔥 New Games Added Daily</li>
+        </ul>
+      </div>
+      <div class="page" id="game">
+        <h3>🎮 Install Game</h3>
+        <input type="text" id="game-id" class="input" placeholder="Enter Game ID">
+        <div class="game-preview" id="game-preview">
+          <img id="game-img" src="" alt="Game">
+          <div id="game-name"></div>
+        </div>
+        <button class="btn" id="install-game-btn">Install</button>
+
+        <!-- Progress + Messages -->
+        <div id="progress-container">
+          <progress id="progress-bar" value="0" max="100"></progress>
+          <div id="progress-text">0%</div>
+          <div id="error-message" class="error-text"></div>
+          <div id="game-result" class="success-text"></div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="btn-outline" id="steamdb-btn">SteamDB</button>
+          <button class="btn-outline" id="restart-steam-btn">Restart Steam</button>
+        </div>
+      </div>
+      <div class="page" id="online">
+        <div class="big-buttons">
+          <button id="online-btn">🌍 Online Games</button>
+        </div>
+      </div>
+      <div class="page" id="bypass">
+        <div class="big-buttons">
+          <button id="bypass-btn">🛡️ Open Bypass</button>
+        </div>
+      </div>
+      <div class="page" id="contact">
+        <div class="big-buttons">
+          <button onclick="window.open('https://discord.gg/feVHYz4V47','_blank')">💬 Discord</button>
+          <button onclick="window.open('https://www.tiktok.com/@zekaayl3b','_blank')">🎥 TikTok</button>
+          <button onclick="window.open('https://www.youtube.com/@Zekaa_El_LOL','_blank')">▶️ YouTube</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function setPage(page){
+      document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+      document.querySelectorAll(".item").forEach(i=>i.classList.remove("active"))
+      document.getElementById(page).classList.add("active")
+      document.querySelector(`.item[data-page="${page}"]`).classList.add("active")
+    }
+    document.querySelectorAll(".item").forEach(el=>{
+      el.addEventListener("click", ()=>setPage(el.dataset.page))
+    })
+    document.getElementById('game-id').addEventListener('input', function(){
+      const gameId = this.value.trim()
+      const preview = document.getElementById('game-preview')
+      if(/^\d+$/.test(gameId)){
+        document.getElementById('game-img').src=`https://cdn.akamai.steamstatic.com/steam/apps/${gameId}/header.jpg`
+        document.getElementById('game-name').textContent="Game ID: "+gameId
+        preview.style.display='block'
+      }else{preview.style.display='none'}
+    })
+
+    document.getElementById("install-game-btn").onclick=async()=>{
+      const gameId=document.getElementById("game-id").value.trim()
+      if(!gameId)return
+
+      const progressContainer=document.getElementById("progress-container")
+      const progressBar=document.getElementById("progress-bar")
+      const progressText=document.getElementById("progress-text")
+      const errorMessage=document.getElementById("error-message")
+      const gameResult=document.getElementById("game-result")
+
+      progressContainer.style.display="block"
+      progressBar.value=0
+      progressText.textContent="0%"
+      errorMessage.textContent=""
+      gameResult.textContent=""
+
+      const result=await window.electronAPI.installGame(gameId)
+      if(result.success){
+        // ✅ اسم اللعبة
+        try{
+          const res=await fetch(`https://store.steampowered.com/api/appdetails?appids=${gameId}`)
+          const data=await res.json()
+          if(data && data[gameId] && data[gameId].success){
+            const gameName=data[gameId].data.name
+            gameResult.textContent=gameName
+          }else{
+            gameResult.textContent="Game Installed"
+          }
+        }catch(e){
+          gameResult.textContent="Game Installed"
+        }
+      }else{
+        // ❌ لو مش موجود
+        progressBar.value=100
+        progressBar.style.accentColor="red"
+        progressText.textContent="100%"
+        errorMessage.textContent="غير متاح للاضافة، دوس OK"
+        alert("غير متاح للاضافة دوس OK")
+        window.open("https://discord.com/invite/zTRRN4Na2G","_blank")
+        setTimeout(()=>{progressContainer.style.display="none"},1000)
+      }
+    }
+
+    window.electronAPI.onInstallProgress((_event, { current, total })=>{
+      if(total>0){
+        let percent=Math.floor((current/total)*100)
+        document.getElementById("progress-bar").value=percent
+        document.getElementById("progress-bar").style.accentColor="#1e90ff"
+        document.getElementById("progress-text").textContent=percent+"%"
+        if(percent>=100){
+          setTimeout(()=>{document.getElementById("progress-container").style.display="none"},1000)
+        }
+      }
+    })
+
+    document.getElementById("steamdb-btn").onclick=()=>{window.electronAPI.openSteamDB()}
+    document.getElementById("restart-steam-btn").onclick=async()=>{
+      const res=await window.electronAPI.restartSteam()
+      if(!res.success) alert(res.error)
+    }
+    document.getElementById("online-btn").onclick=()=>window.open("https://zekaa-injector.vercel.app/games.html","_blank")
+    document.getElementById("bypass-btn").onclick=()=>window.open("https://zekaa-injector.vercel.app/Bypass.html","_blank")
+  </script>
+</body>
+</html>
